@@ -1,4 +1,3 @@
-// import {Board} from "./Components/Board"
 import React, { useState, useEffect } from 'react';
 
 import './App.css';
@@ -34,9 +33,10 @@ function App() {
   };
 
   const displayComputerMove = (row, col) => {
-
-    const buttonId = "button".concat(row.toString(), col.toString())
-    console.log(buttonId)
+    console.log(row);
+    console.log(col);
+    const buttonId = "button".concat(row.toString(), col.toString());
+    console.log(buttonId);
 
     setbuttonSettings((prevButtonStates) => ({
       ...prevButtonStates,
@@ -45,30 +45,27 @@ function App() {
     }));
   };
 
-  function getComputerMove(row, col){ //try to get the backend to return something real.
-      let response;
+  const getComputerMove = async (row, col) => { //try to get the backend to return something real.
+    try{
+      const response = await fetch("/post",{
+          method: 'POST',
+          body: JSON.stringify({
+            'row': row,
+            'col': col,
+          }),
+          headers : {
+            'Content-type': 'application/json'
+          },
+        })
 
-      fetch("/post",{
-        method: 'POST',
-        body: JSON.stringify({
-          'row': row,
-          'col': col,
-        }),
-        headers : {
-          'Content-type': 'application/json'
-        },
-      })
-      .then(response = console.log(response)) //RESPONSE IS UNDEFINED???
+        const data = await response.json();
+        console.log(data);
+        displayComputerMove(data['rowToFrontend'], data['colToFrontend']);
 
-      
-      // .then(response = response.json()) //WHY NO CONSOLELOG
-      
-      // .then(response = console.log(response))
-      .catch(error => console.log(error))
-
-      // console.log(response)
-      // console.log("_______")
-      // displayComputerMove(response['rowToFrontend'], response['colToFrontend'])
+    }
+    catch(error){
+      console.log(error)
+    }
   
   };
 
@@ -102,16 +99,6 @@ function App() {
     display: 'flex',
     flexDirection: 'column',
   };
-
-  // useEffect( () => {
-  //   fetch("/getToFrontend")
-  //     .then(response => response.json())
-  //     .then(response => setTest((prevTest) => response))
-  //     .catch(error => console.log(error));
-    
-  //     console.log(test)
-      
-  // }, [buttonSettings]); //how to make this not run when i reset?
 
   return (
     <div style={gridStyle}>
